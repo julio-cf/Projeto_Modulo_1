@@ -1,13 +1,12 @@
 import sys
 from pathlib import Path
 
-import mysql.connector
-
 # Adiciona a pasta raiz (Projeto_Modulo_1) ao caminho do Python
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import pandas as pd
 import gdown
+import zipfile
 
 import config
 import banco
@@ -28,11 +27,7 @@ def baixar_zip():
         gdown.download(id=config.DRIVE_FILE_ID, output=str(destino))
     return destino
 
-// Para execução via terminal
-if __name__ == "__main__":
-    caminho_zip = baixar_zip()
-
---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Passo 2 - Extrair os CSVs do zip e carregar no MySQL
 
 def carregar_csv(conexao, zip_aberto, nome_csv, tabela):
@@ -59,3 +54,37 @@ def carregar_csv(conexao, zip_aberto, nome_csv, tabela):
             chunksize=config.TAMANHO_BLOCO,
         )
         for pedaco in pedacos:
+            linhas = pedaco.values.tolist()
+            # um "%s" para cada coluna do CSV
+            marcadores = ", ".join(["%s"] * len(pedaco.columns))
+            comando = f"INSERT INTO {tabela} VALUES ({marcadores})"
+            banco.inserir_em_lote(conexao, comando, linhas)
+            total += len(linhas)
+
+    print("        ->", total, "linhas em", tabela)
+# --------------------------------------------------------------------
+# Passo 3 - Fluxo principal do script
+
+def main():
+    print("=== FASE 1: EXTRACAO + CAMADA RAW ===")
+    try:
+        conexao = banco.conectar()
+
+        caminho_zip = baixar_zip()
+        print("[2/3] Abrindo o arquivo zip...")
+        print("[3/3] Carregando as 4 tabelas RAW...")
+        with zipfile.ZipFile(caminho_zip) as zip_aberto:
+            for arquivo in config.ARQUIVOS.values():
+                carregar_csv(
+                    conexao, zip_aberto, arquivo["csv"], arquivo["tabela_raw"]
+                )
+
+        conexao.close()
+        print("=== Camada RAW concluida com sucesso! ===")
+    except Exception as erro:
+        print("[ERRO] Algo deu errado:", erro)
+        raise
+
+
+if __name__ == "__main__":
+    main()
