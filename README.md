@@ -12,6 +12,30 @@ Para encarar o desafio, foi usado SQL (MySQL), Python (com Pandas e Seaborn). Fo
 
 0_criar_banco.sql -> 1_extrair.py -> 2_transformar.py -> 3_analise.ipynb
 
+## Estrutura do projeto
+
+```text
+PROJETO_MODULO_1 (WORKSPACE)
+└── Projeto_Modulo_1
+    ├── __pycache__
+    │   ├── banco.cpython-313.pyc
+    │   └── config.cpython-313.pyc
+    ├── data
+    │   └── viagens.zip
+    ├── scripts
+    │   ├── 1_extrair.py
+    │   ├── 2_transformar.py
+    │   └── 3_analise.ipynb
+    ├── sql
+    │   └── 0_criar_banco.sql
+    ├── .env
+    ├── .gitignore
+    ├── banco.py
+    ├── config.py
+    ├── README.md
+    └── requeriments.txt
+```
+
 ## Como executar
 
 Os arquivos devem ser executados nesta ordem:
