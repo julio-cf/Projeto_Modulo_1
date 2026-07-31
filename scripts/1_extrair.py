@@ -39,7 +39,6 @@ def carregar_csv(conexao, zip_aberto, nome_csv, tabela):
     """
     print("    Carregando", tabela, "...")
 
-    # esvazia a tabela antes de carregar (assim, rodar de novo nao duplica dados)
     banco.executar(conexao, f"TRUNCATE TABLE {tabela}")
 
     total = 0
@@ -55,7 +54,6 @@ def carregar_csv(conexao, zip_aberto, nome_csv, tabela):
         )
         for pedaco in pedacos:
             linhas = pedaco.values.tolist()
-            # um "%s" para cada coluna do CSV
             marcadores = ", ".join(["%s"] * len(pedaco.columns))
             comando = f"INSERT INTO {tabela} VALUES ({marcadores})"
             banco.inserir_em_lote(conexao, comando, linhas)
