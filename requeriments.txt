@@ -1,0 +1,9 @@
+Python 3.13.14
+gdown 6.1.0
+matplotlib 3.11.1
+mysql-connector-python 9.7.0
+numpy 2.4.6
+pandas 3.0.3
+seaborn 0.13.2
+
+mysql 8.0.46
